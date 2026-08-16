@@ -16,7 +16,7 @@ authRouter.post(
 authRouter.post('/reset-password', catchError(authController.resetPassword));
 
 authRouter.get(
-  '/activation/:email/:activationToken',
+  '/activation/:activationToken',
   catchError(authController.activation),
 );
 

@@ -98,7 +98,13 @@ function normalizeUser(user) {
     return null;
   }
 
-  const { createdAt, password, ...safeUser } = user;
+  const {
+    createdAt,
+    password,
+    activationToken,
+    resetPasswordJti,
+    ...safeUser
+  } = user;
 
   return safeUser;
 }
@@ -148,11 +154,10 @@ function changeName(id, name) {
   });
 }
 
-async function activateUserByToken(email, activationToken) {
+async function activateUserByToken(activationToken) {
   try {
     const user = await userModel.update({
       where: {
-        email,
         activationToken,
       },
       data: {
@@ -189,7 +194,7 @@ async function registration({ name, email, password }) {
     },
   });
 
-  mailerService.sendActivationLink(email, activationToken);
+  await mailerService.sendActivationLink(email, activationToken);
 }
 
 async function getResetPasswordJWT(email) {
@@ -213,7 +218,7 @@ async function getResetPasswordJWT(email) {
     where: { id },
     data: { resetPasswordJti },
   });
-  mailerService.sendResetPasswordLink(email, resetPasswordJWT);
+  await mailerService.sendResetPasswordLink(email, resetPasswordJWT);
 }
 
 async function resetPassword(jwt, newPassword) {
@@ -296,7 +301,7 @@ async function changeEmail(id, currentPassword, newEmail) {
       data: { email: newEmail },
     });
 
-    mailerService.sendUpdateEmail(user.email);
+    await mailerService.sendUpdateEmail(user.email);
 
     return updatedUser;
   } catch (error) {

@@ -18,7 +18,7 @@ function send(email, subject, html) {
 }
 
 function sendActivationLink(email, activationToken) {
-  const link = `${process.env.CLIENT_URL}/activate/${email}/${activationToken}`;
+  const link = `${process.env.CLIENT_URL}/activate/${activationToken}`;
   const html = `
     <h1>Account activation</h1>
     <a href="${link}">${link}</a>
@@ -37,7 +37,7 @@ function sendUpdateEmail(email) {
 }
 
 function sendResetPasswordLink(email, resetPasswordJWT) {
-  const link = `${process.env.CLIENT_URL}/reset-password/${email}/${resetPasswordJWT}`;
+  const link = `${process.env.CLIENT_URL}/reset-password/${resetPasswordJWT}`;
   const html = `
     <h1>Reset password link.</h1>
     <a href="${link}">${link}</a>

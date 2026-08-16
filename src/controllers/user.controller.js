@@ -34,7 +34,7 @@ async function updateById(req, res) {
   const data = req.body;
 
   if (Number(req.user.id) !== id) {
-    res.status(403).send({
+    return res.status(403).send({
       message: 'You do not have the required rights to perform this operation.',
     });
   }

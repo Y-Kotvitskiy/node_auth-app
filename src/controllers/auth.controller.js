@@ -5,8 +5,6 @@ import { ApiError } from '../exceptions/Api.error.js';
 import { jwtService } from '../services/jwt.service.js';
 import { tokenService } from '../services/token.service.js';
 
-const { normalizeUser } = userService;
-
 async function authenticateSession(res, authUser) {
   const user = userService.normalizeUser(authUser);
   const accessToken = jwtService.sign(user);
@@ -34,9 +32,9 @@ async function registration(req, res) {
 }
 
 async function activation(req, res) {
-  const { email, activationToken } = req.params;
+  const { activationToken } = req.params;
 
-  const user = await userService.activateUserByToken(email, activationToken);
+  const user = await userService.activateUserByToken(activationToken);
 
   if (!user) {
     throw ApiError.badRequest('User not found');
@@ -74,7 +72,7 @@ async function login(req, res) {
     throw ApiError.badRequest('Please, activate your email first');
   }
 
-  const normalizedUser = normalizeUser(user);
+  const normalizedUser = userService.normalizeUser(user);
 
   await authenticateSession(res, normalizedUser);
 }
