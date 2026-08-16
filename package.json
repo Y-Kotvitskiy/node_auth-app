@@ -41,6 +41,7 @@
     "uuid": "^14.0.1"
   },
   "mateAcademy": {
-    "projectType": "javascript"
+    "projectType": "javascript",
+    "eslintConfig": ".eslintrc.cjs"
   }
 }
