@@ -41,7 +41,18 @@
     "uuid": "^14.0.1"
   },
   "mateAcademy": {
-    "projectType": "javascript",
-    "eslintConfig": ".eslintrc.cjs"
+    "projectType": "javascript"
+  },
+  "eslintConfig": {
+    "extends": "@mate-academy/eslint-config",
+    "env": {
+      "jest": true
+    },
+    "rules": {
+      "no-proto": 0
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    }
   }
 }
