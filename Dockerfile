@@ -1,18 +1,17 @@
-# Етап 1: Встановлення залежностей та збірка
-FROM node:24-alpine AS builder
+FROM node:24-alpine
 WORKDIR /app
+
+# Копіюємо конфігурації та Prisma схему
 COPY package*.json ./
+COPY prisma ./prisma/
+
+# Встановлюємо залежності та генеруємо клієнт Prisma
 RUN npm ci
+RUN npx prisma generate
+
+# Копіюємо весь вихідний код
 COPY . .
-# Якщо використовуєте TypeScript або esbuild:
-RUN npm run build || true 
-
-COPY package*.json ./
-# Встановлюємо лише продакшен-залежності
-RUN npm ci --omit=dev
-
-# Копіюємо зібраний JS-код з першого етапу (або весь проект, якщо це чистий JS)
-COPY --from=builder /app ./
 
 EXPOSE 3000
-CMD ["node", "src/index.js"] 
+
+CMD ["node", "./src/index.js"]
