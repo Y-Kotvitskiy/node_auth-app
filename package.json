@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Auth app",
   "main": "src/index.js",
-  "type": "module",
   "scripts": {
     "init": "mate-scripts init",
     "build": "prisma generate",
@@ -30,6 +29,7 @@
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "bcrypt": "^6.0.0",
+    "check-password-strength": "^3.0.0",
     "config": "^4.4.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

@@ -5,11 +5,7 @@ export const authMiddleware = (req, res, next) => {
   const [, token] = authHeader.split(' ');
 
   if (!authHeader || !token) {
-    return res.sendStatus(401);
-  }
-
-  if (!token) {
-    return res.status(401).send({ message: 'Token missing' });
+    return res.sendStatus(401).send({ message: 'Token missing' });
   }
 
   const userData = jwtService.verify(token);

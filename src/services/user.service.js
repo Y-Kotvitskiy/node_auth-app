@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { passwordStrength } from 'check-password-strength';
 import bcrypt from 'bcrypt';
 import { db } from '../utils/db.js';
 import { v4 as uuid4 } from 'uuid';
@@ -39,6 +40,12 @@ const validatePassword = (value) => {
   if (value.length < 6) {
     return 'At least 6 characters';
   }
+
+  const checkResult = passwordStrength(value);
+
+  if (checkResult.id === 0) {
+    return 'Password is ' + checkResult.value;
+  }
 };
 
 const validators = {
@@ -47,9 +54,9 @@ const validators = {
   newEmail: validateEmail,
   password: validatePassword,
   currentPassword: validatePassword,
+  confirmPassword: validatePassword,
 };
 
-// Centralized field validation utility
 function validateFields(validationFields) {
   const errors = {};
 
@@ -76,12 +83,8 @@ function verifyValidationErrors(errors, message = 'Validation error') {
   }
 }
 
-function validateOrThrow(
-  values,
-  validatorsMap = validators,
-  message = 'Validation error',
-) {
-  const errors = validateFields(values, validatorsMap);
+function validateOrThrow(values, message = 'Validation error') {
+  const errors = validateFields(values);
 
   verifyValidationErrors(errors, message);
 
@@ -137,7 +140,7 @@ function findById(id) {
 
 function changeName(id, name) {
   // Validate provided name
-  validateOrThrow({ name }, { name: validateName });
+  validateOrThrow({ name });
 
   return userModel.update({
     where: { id },
@@ -242,7 +245,7 @@ async function resetPassword(jwt, newPassword) {
 
 async function updatePassword(id, newPassword) {
   // Validate newPassword
-  validateOrThrow({ newPassword }, { newPassword: validatePassword });
+  validateOrThrow({ newPassword });
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -293,7 +296,7 @@ async function changeEmail(id, currentPassword, newEmail) {
       data: { email: newEmail },
     });
 
-    mailerService.sendUpdateEmail(user.email, newEmail);
+    mailerService.sendUpdateEmail(user.email);
 
     return updatedUser;
   } catch (error) {

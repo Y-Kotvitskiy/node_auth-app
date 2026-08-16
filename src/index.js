@@ -27,11 +27,11 @@ app.get('/', (req, res) => {
   res.send({ message: 'This is the User registration app.' });
 });
 
-// app.use('{*path}', (req, res, next) => {
-//   res.status(404).json({
-//     message: `Cannot ${req.method} ${req.originalUrl}`,
-//   });
-// });
+app.use('{*path}', (req, res, next) => {
+  res.status(404).json({
+    message: `Cannot ${req.method} ${req.originalUrl}`,
+  });
+});
 
 app.use(errorMiddleware);
 

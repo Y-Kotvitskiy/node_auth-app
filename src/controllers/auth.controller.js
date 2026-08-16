@@ -7,11 +7,12 @@ import { tokenService } from '../services/token.service.js';
 
 const { normalizeUser } = userService;
 
-function authenticateSession(res, user) {
+async function authenticateSession(res, authUser) {
+  const user = userService.normalizeUser(authUser);
   const accessToken = jwtService.sign(user);
   const refreshToken = jwtService.signRefresh(user);
 
-  tokenService.save(user.id, refreshToken);
+  await tokenService.save(user.id, refreshToken);
 
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
@@ -19,7 +20,10 @@ function authenticateSession(res, user) {
     maxAge: ms(process.env.EXP_IN_REFRESH),
   });
 
-  res.send({ user, accessToken });
+  res.send({
+    user,
+    accessToken,
+  });
 }
 
 async function registration(req, res) {
@@ -38,7 +42,7 @@ async function activation(req, res) {
     throw ApiError.badRequest('User not found');
   }
 
-  authenticateSession(res, user);
+  await authenticateSession(res, user);
 }
 
 async function forgotPasswordRequest(req, res) {
@@ -72,17 +76,24 @@ async function login(req, res) {
 
   const normalizedUser = normalizeUser(user);
 
-  authenticateSession(res, normalizedUser);
+  await authenticateSession(res, normalizedUser);
 }
 
 async function resetPassword(req, res) {
-  const { jwt, newPassword } = req.body;
+  const { jwt, newPassword, confirmPassword } = req.body;
 
   if (!jwt) {
     throw ApiError.badRequest('Not enough parameters', { jwt: 'Is empty' });
   }
 
-  await userService.resetPassword(jwt, newPassword);
+  if (newPassword !== confirmPassword) {
+    throw ApiError.badRequest('Bad confirmation for the new password', {
+      newPassword: 'Not equal to the confirm password',
+      confirmPassword: 'Not equal to the new password',
+    });
+  }
+
+  await userService.resetPassword(jwt, newPassword, confirmPassword);
 
   res.status(201).send('Password has been successfully updated');
 }
@@ -101,7 +112,7 @@ async function refresh(req, res) {
     throw ApiError.unauthorized('Invalid refresh token');
   }
 
-  authenticateSession(res, userData.user);
+  await authenticateSession(res, userData.user);
 }
 
 async function logout(req, res) {

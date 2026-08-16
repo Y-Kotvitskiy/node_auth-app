@@ -33,6 +33,12 @@ async function updateById(req, res) {
   const id = Number(req.params.id);
   const data = req.body;
 
+  if (Number(req.user.id) !== id) {
+    res.status(403).send({
+      message: 'You do not have the required rights to perform this operation.',
+    });
+  }
+
   if (Number.isInteger(id) === false || id <= 0) {
     throw new ApiError(400, 'Invalid user ID');
   }
@@ -56,16 +62,24 @@ async function updateById(req, res) {
       newEmail,
     );
 
+    if (!updatedUser) {
+      res.status(404).send({ message: 'User not found' });
+    }
+
     return res.send(userService.normalizeUser(updatedUser));
   }
 
-  const newUser = await userService.changeName(id, name);
+  if (name) {
+    const newUser = await userService.changeName(id, name);
 
-  if (!newUser) {
-    return res.status(404).send({ message: 'User not found' });
+    if (!newUser) {
+      res.status(404).send({ message: 'User not found' });
+    }
+
+    return res.send(userService.normalizeUser(newUser));
   }
 
-  return res.send(userService.normalizeUser(newUser));
+  throw ApiError.badRequest('Not enough parameters to update');
 }
 
 export const userController = { getAll, getById, updateById };

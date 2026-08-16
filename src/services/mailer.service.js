@@ -27,10 +27,10 @@ function sendActivationLink(email, activationToken) {
   return send(email, 'Account activation', html);
 }
 
-function sendUpdateEmail(email, newEmail) {
+function sendUpdateEmail(email) {
   const html = `
     <h1>Email changed</h1>
-    <p>Your profile email changed to ${newEmail}</p>
+    <p>Your profile email changed.</p>
   `;
 
   return send(email, 'Profile email changed', html);
