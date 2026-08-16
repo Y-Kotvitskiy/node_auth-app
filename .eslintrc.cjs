@@ -1,18 +1,10 @@
-import mateAcademyEslintConfig from '@mate-academy/eslint-config';
-
-export default [
-  ...mateAcademyEslintConfig,
-  {
-    languageOptions: {
-      globals: {
-        jest: true,
-      },
-    },
-    plugins: {
-      jest,
-    },
-    rules: {
-      'no-proto': 'off',
-    },
+module.exports = {
+  extends: '@mate-academy/eslint-config',
+  env: {
+    jest: true,
   },
-];
+  rules: {
+    'no-proto': 0,
+  },
+  plugins: ['jest'],
+};
